@@ -116,18 +116,19 @@ TEMPLATES = [
 DATABASES = {
     "default": dj_database_url.config(
         default=config("DATABASE_URL", default="postgres://chatuser:chatpass@localhost:5432/chatdb"),
-        # conn_max_age=0 — do NOT use persistent connections.
+        # ── Connection persistence ──────────────────────────────────────────────
+        # Supabase free (session mode, port 5432): max 15 simultaneous connections.
+        #   → conn_max_age=0  (open+close per request, never exhaust the pool)
         #
-        # Supabase's free session-mode pooler (port 5432) limits to 15 simultaneous
-        # sessions. With persistent connections (e.g. conn_max_age=60), Daphne workers
-        # each hold an open socket → pool exhausted → EMAXCONNSESSION → 500 on every
-        # request. Setting conn_max_age=0 means Django opens + closes a connection per
-        # request (~10ms overhead) but never holds more than one connection per in-flight
-        # request, keeping total connections well under the limit.
-        conn_max_age=0,
-        conn_health_checks=False,  # no-op when conn_max_age=0
-        # Required for Supabase session-mode pooler (PgBouncer).
-        # Disables server-side cursors which pgbouncer doesn't support.
+        # Railway Postgres (same-network): no connection limit, ~1-5ms latency.
+        #   → conn_max_age=600  (persistent connections, much faster throughput)
+        #
+        # Switch by setting DB_PERSISTENT_CONNECTIONS=true in Railway env vars
+        # after adding a Railway PostgreSQL service.
+        conn_max_age=config("DB_PERSISTENT_CONNECTIONS", default=False, cast=bool) and 600 or 0,
+        conn_health_checks=config("DB_PERSISTENT_CONNECTIONS", default=False, cast=bool),
+        # Disables server-side cursors (required for PgBouncer / Supabase pooler).
+        # Safe to keep True even with Railway Postgres — no negative effect.
         disable_server_side_cursors=True,
     )
 }
