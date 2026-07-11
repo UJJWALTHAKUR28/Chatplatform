@@ -1,0 +1,58 @@
+# ── Python / Django (backend) ─────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+backend/venv/
+backend/.venv/
+backend/env/
+
+# Django
+backend/staticfiles/
+backend/media/
+backend/*.log
+backend/db.sqlite3
+
+# Secrets — NEVER commit these
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# ── Node.js / Next.js (frontend) ──────────────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env.*.local
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+
+# TypeScript build info
+frontend/tsconfig.tsbuildinfo
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# Keep docker-compose.yml and Dockerfiles — they are intentional
+
+# ── OS / Editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+pyrightconfig.json

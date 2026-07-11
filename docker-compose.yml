@@ -1,0 +1,54 @@
+services:
+  # ── Redis ────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "6379:6379"  # Expose for local debugging; remove in production
+
+  # ── Django backend (Daphne ASGI) ─────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      # Override REDIS_URL to point to the compose redis service
+      REDIS_URL: redis://redis:6379/0
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      # Mount staticfiles so nginx (if added later) can serve them
+      - static_files:/app/staticfiles
+
+  # ── Optional: Nginx reverse proxy ────────────────────────────────────────────
+  # Uncomment to add Nginx as a reverse proxy in front of Daphne.
+  # nginx:
+  #   image: nginx:alpine
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  #     - static_files:/app/staticfiles:ro
+  #   depends_on:
+  #     - backend
+
+volumes:
+  redis_data:
+  static_files:
