@@ -35,8 +35,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy application code
 COPY --chown=appuser:appgroup . .
 
-# Make entrypoint executable
-RUN chmod +x /app/entrypoint.sh
+# Make entrypoint executable and ensure appuser owns /app
+RUN chmod +x /app/entrypoint.sh \
+    && mkdir -p /app/staticfiles \
+    && chown -R appuser:appgroup /app
 
 # Switch to non-root user
 USER appuser
