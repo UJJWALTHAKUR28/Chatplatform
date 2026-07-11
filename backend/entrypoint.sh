@@ -19,6 +19,6 @@ exec daphne \
     -b 0.0.0.0 \
     -p "${PORT}" \
     --websocket_timeout 86400 \
-    --ping_interval 20 \
-    --ping_timeout 30 \
+    --ping-interval 20 \
+    --ping-timeout 30 \
     core.asgi:application
