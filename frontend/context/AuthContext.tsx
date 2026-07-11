@@ -105,14 +105,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener("auth:logout", handler);
     return () => window.removeEventListener("auth:logout", handler);
   }, [router]);
-
-  // ── Token watchdog: detect when tokens disappear from localStorage ───────
-  // localStorage changes in the same tab don't fire the "storage" event, so
-  // we poll every second. When both tokens are gone while the user is
-  // authenticated (e.g. manual DevTools deletion or expiry), redirect instantly
-  // instead of waiting for the next API call to return 401.
   useEffect(() => {
     if (isLoading) return; // don't start until bootstrap is complete
+
+    // Not authenticated at all — nothing to watch
+    const wasAuthenticated = !!user || hasStoredToken;
+    if (!wasAuthenticated) return;
 
     const id = setInterval(() => {
       const hasAccess = !!getAccessToken();
@@ -126,7 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, 1000);
 
     return () => clearInterval(id);
-  }, [isLoading, router]);
+  }, [isLoading, user, hasStoredToken, router]);
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await apiClient.post<AuthResponse>("/auth/login/", {
