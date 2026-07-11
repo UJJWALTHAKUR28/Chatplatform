@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import EmberMark from "@/components/ui/Embermark";
 import SignalMeter from "@/components/ui/Signalmeter";
-import ThemeToggle from "@/components/ui/Themetoggle";
 
 // Flatten DRF validation error payloads into a single human-readable string.
 type DrfErrorData = Record<string, string | string[]>;
@@ -48,8 +47,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-[var(--bg)] px-4 py-10">
-      <ThemeToggle className="absolute right-5 top-5" />
-
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-3">

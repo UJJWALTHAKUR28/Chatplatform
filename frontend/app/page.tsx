@@ -6,9 +6,7 @@
 //  - Signed in: redirect straight to /chat (no need to sell them on it).
 //  - Signed out: show the landing page instead of bouncing to /login.
 
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+
 import Link from "next/link";
 import { Palette, Search, Radio, Zap, ArrowRight } from "lucide-react";
 import EmberMark from "@/components/ui/Embermark";
@@ -87,29 +85,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       {/* Nav */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <div className="flex items-center gap-2 text-[var(--text-primary)]">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent)] text-white">
-            <EmberMark className="h-4 w-4" />
-          </span>
-          <span className="font-[family-name:var(--font-display)] text-lg italic">Ember</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <Link
-            href="/login"
-            className="hidden text-sm font-medium text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] sm:block"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--accent-hover)] active:bg-[var(--accent-active)]"
-          >
-            Get started
-          </Link>
-        </div>
-      </header>
+
 
       {/* Hero */}
       <section className="mx-auto grid max-w-6xl gap-14 px-6 pb-24 pt-10 sm:pt-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
@@ -207,27 +183,5 @@ function Landing() {
 }
 
 export default function RootPage() {
-  const { isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/chat");
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  if (isLoading || isAuthenticated) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-[var(--bg)]">
-        <div className="flex flex-col items-center gap-4">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)] text-white">
-            <EmberMark className="h-6 w-6" />
-          </span>
-          <SignalMeter size="md" color="var(--accent)" />
-        </div>
-      </div>
-    );
-  }
-
   return <Landing />;
 }

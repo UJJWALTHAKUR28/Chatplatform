@@ -4,7 +4,7 @@ import type { Conversation, User } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LogOut, Search, X, Check, Users, UserCircle } from "lucide-react";
+import { Home, LogOut, Search, X, Check, Users, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { avatarGradient } from '@/lib/avatarColors';
 import SignalMeter from "../ui/Signalmeter";
@@ -117,18 +117,25 @@ export default function ConversationList({ activeId }: Props) {
   if (!user) return null;
 
   return (
-    <aside className="flex h-full w-full flex-col border-r border-[var(--border)] bg-[var(--bg-raised)]">
+    <aside className="flex h-full w-full flex-col border-r border-[var(--border)] bg-[var(--bg-raised)] md:w-80 md:flex-shrink-0 lg:w-96">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-4">
-        <div className="flex items-center gap-2">
+        <Link href="/chat" title="Home" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent)] text-white">
             <EmberMark className="h-4 w-4" />
           </div>
           <span className="font-[family-name:var(--font-display)] text-base italic text-[var(--text-primary)]">
             Ember
           </span>
-        </div>
+        </Link>
         <div className="flex items-center gap-1">
+          <Link
+            href="/"
+            title="Home"
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-tertiary)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+          >
+            <Home className="h-4 w-4" />
+          </Link>
           <ThemeToggle className="mr-1" />
           <button
             onClick={() => setShowNew((v) => !v)}

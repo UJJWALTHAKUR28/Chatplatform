@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
 import type { Conversation, Message, PaginatedResponse } from "@/types";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, Wifi, WifiOff } from "lucide-react";
+import { ArrowLeft, Home, Wifi, WifiOff } from "lucide-react";
 import Link from "next/link";
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
@@ -129,8 +129,13 @@ export default function MessageThread({ conversationId }: Props) {
     <div className="flex h-full flex-col bg-[var(--bg)]">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-[var(--border)] bg-[var(--bg-raised)] px-4 py-3">
-        <Link href="/chat" className="text-[var(--text-tertiary)] transition hover:text-[var(--text-primary)] md:hidden">
-          <ArrowLeft className="h-5 w-5" />
+        <Link
+          href="/chat"
+          title="Back to chats"
+          className="flex flex-shrink-0 items-center gap-1.5 rounded-lg py-1 pr-2 text-[var(--text-tertiary)] transition hover:text-[var(--text-primary)] md:hover:bg-[var(--surface-hover)]"
+        >
+          <ArrowLeft className="h-5 w-5 md:h-4 md:w-4" />
+          <span className="hidden text-sm font-medium md:inline">Back</span>
         </Link>
         {otherUser && <Avatar name={otherName} size="md" />}
         <div className="min-w-0 flex-1">
@@ -159,6 +164,13 @@ export default function MessageThread({ conversationId }: Props) {
             )}
           </div>
         </div>
+        <Link
+          href="/"
+          title="Home"
+          className="flex-shrink-0 text-[var(--text-tertiary)] transition hover:text-[var(--text-primary)]"
+        >
+          <Home className="h-4 w-4" />
+        </Link>
         <SoundToggle />
         {/* WS connection indicator */}
         <div title={isConnected ? "Connected" : "Reconnecting…"}>
