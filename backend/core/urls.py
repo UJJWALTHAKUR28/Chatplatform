@@ -14,10 +14,20 @@ core/asgi.py — they are NOT Django URL patterns.
 """
 
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 
+
+def health_check(request):
+    """Lightweight health-check endpoint for Railway / uptime monitors."""
+    return JsonResponse({"status": "ok"})
+
 urlpatterns = [
+    # ── Health Check ─────────────────────────────────────────────────────────
+    # GET /health/  → {"status": "ok"} — used by Railway & uptime monitors
+    path("health/", health_check, name="health_check"),
+
     # ── Django Admin ────────────────────────────────────────────────────────
     path("admin/", admin.site.urls),
 

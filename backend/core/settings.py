@@ -116,7 +116,10 @@ TEMPLATES = [
 DATABASES = {
     "default": dj_database_url.config(
         default=config("DATABASE_URL", default="postgres://chatuser:chatpass@localhost:5432/chatdb"),
-        conn_max_age=600,
+        # 60s instead of 600s — Supabase's session pooler drops idle connections
+        # faster than 10 minutes. Short TTL prevents OperationalError on cold-start
+        # when Railway wakes a sleeping container and tries to reuse a dead socket.
+        conn_max_age=60,
         conn_health_checks=True,
         # Required for Supabase session-mode pooler (PgBouncer).
         # Disables server-side cursors which pgbouncer doesn't support.
