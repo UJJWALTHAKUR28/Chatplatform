@@ -116,11 +116,16 @@ TEMPLATES = [
 DATABASES = {
     "default": dj_database_url.config(
         default=config("DATABASE_URL", default="postgres://chatuser:chatpass@localhost:5432/chatdb"),
-        # 60s instead of 600s — Supabase's session pooler drops idle connections
-        # faster than 10 minutes. Short TTL prevents OperationalError on cold-start
-        # when Railway wakes a sleeping container and tries to reuse a dead socket.
-        conn_max_age=60,
-        conn_health_checks=True,
+        # conn_max_age=0 — do NOT use persistent connections.
+        #
+        # Supabase's free session-mode pooler (port 5432) limits to 15 simultaneous
+        # sessions. With persistent connections (e.g. conn_max_age=60), Daphne workers
+        # each hold an open socket → pool exhausted → EMAXCONNSESSION → 500 on every
+        # request. Setting conn_max_age=0 means Django opens + closes a connection per
+        # request (~10ms overhead) but never holds more than one connection per in-flight
+        # request, keeping total connections well under the limit.
+        conn_max_age=0,
+        conn_health_checks=False,  # no-op when conn_max_age=0
         # Required for Supabase session-mode pooler (PgBouncer).
         # Disables server-side cursors which pgbouncer doesn't support.
         disable_server_side_cursors=True,
