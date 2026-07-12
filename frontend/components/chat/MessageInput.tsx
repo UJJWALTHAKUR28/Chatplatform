@@ -117,6 +117,12 @@ export default function MessageInput({ conversationId }: Props) {
             unlockAudio();
           }}
           onKeyDown={handleKeyDown}
+          onFocus={(e) => {
+            const el = e.currentTarget;
+            setTimeout(() => {
+              el.scrollIntoView({ behavior: "smooth", block: "end" });
+            }, 250);
+          }}
           placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
           rows={1}
           maxLength={4000}
