@@ -30,8 +30,10 @@ backend/.env.*
 frontend/node_modules/
 frontend/.next/
 frontend/out/
-frontend/.env.local
-frontend/.env.*.local
+# Secrets — NEVER commit these
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 
 # Next.js build output
 frontend/.next/

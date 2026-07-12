@@ -7,8 +7,22 @@
 //  - Signed out: show the landing page instead of bouncing to /login.
 
 
+import { useState } from "react";
 import Link from "next/link";
-import { Palette, Search, Radio, Zap, ArrowRight } from "lucide-react";
+import {
+  Palette,
+  Search,
+  Radio,
+  Zap,
+  ArrowRight,
+  UserPlus,
+  MessageCircle,
+  RefreshCw,
+  Lock,
+  ShieldCheck,
+  KeyRound,
+  ChevronDown,
+} from "lucide-react";
 import EmberMark from "@/components/ui/Embermark";
 import SignalMeter from "@/components/ui/Signalmeter";
 import ThemeToggle from "@/components/ui/Themetoggle";
@@ -33,6 +47,84 @@ const FEATURES = [
     icon: Palette,
     title: "Make it yours",
     body: "Switch between a light and dark theme any time — it remembers your choice.",
+  },
+];
+
+const HOW_IT_WORKS = [
+  {
+    icon: UserPlus,
+    step: "01",
+    title: "Create your account",
+    body: "Just an email and a display name — no card, no waiting around.",
+  },
+  {
+    icon: Search,
+    step: "02",
+    title: "Find your people",
+    body: "Search by name or email and jump into a conversation in two taps.",
+  },
+  {
+    icon: MessageCircle,
+    step: "03",
+    title: "Talk in real time",
+    body: "Messages, typing, and presence update instantly over a live connection.",
+  },
+  {
+    icon: RefreshCw,
+    step: "04",
+    title: "Stay in sync",
+    body: "Read state and unread counts follow you, so you never lose the thread.",
+  },
+];
+
+const SECURITY_POINTS = [
+  {
+    icon: Lock,
+    title: "Encrypted at rest",
+    body: "Every message is encrypted before it ever touches the database — a raw data dump reveals nothing about what was said.",
+  },
+  {
+    icon: KeyRound,
+    title: "Short-lived sessions",
+    body: "Access tokens expire in minutes. Refresh tokens rotate on use and are revoked the moment you log out.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Private by design",
+    body: "Conversations are scoped strictly to their participants, enforced on every request and every socket connection.",
+  },
+];
+
+const TECH_STACK = [
+  "Next.js",
+  "React",
+  "TypeScript",
+  "Tailwind CSS",
+  "Django",
+  "Django Channels",
+  "PostgreSQL",
+  "Redis",
+  "WebSockets",
+  "JWT Auth",
+];
+
+const FAQS = [
+  {
+    question: "Is Ember free to use?",
+    answer: "Yes. Creating an account and messaging your contacts doesn't cost anything.",
+  },
+  {
+    question: "Are my messages private?",
+    answer:
+      "Messages are encrypted at rest and only ever visible to the people inside that conversation.",
+  },
+  {
+    question: "Does it work on mobile?",
+    answer: "Ember runs right in your mobile browser — no app store or install required.",
+  },
+  {
+    question: "Can I switch between light and dark mode?",
+    answer: "Anytime, from the toggle in the navbar. Your choice is remembered for next time.",
   },
 ];
 
@@ -78,6 +170,143 @@ function ChatMockup() {
         </div>
       </div>
     </div>
+  );
+}
+
+function HowItWorks() {
+  return (
+    <section className="mx-auto max-w-6xl border-t border-[var(--border)] px-6 py-20">
+      <h2 className="max-w-md font-[family-name:var(--font-display)] text-3xl italic text-[var(--text-primary)]">
+        How it works
+      </h2>
+      <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
+        Four steps between you and your next conversation.
+      </p>
+
+      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {HOW_IT_WORKS.map(({ icon: Icon, step, title, body }) => (
+          <div
+            key={step}
+            className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] p-6"
+          >
+            <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--text-tertiary)]">
+              {step}
+            </span>
+            <span className="mt-4 flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)]">
+              <Icon className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 text-base font-semibold text-[var(--text-primary)]">{title}</h3>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SecuritySection() {
+  return (
+    <section className="mx-auto max-w-6xl border-t border-[var(--border)] px-6 py-20">
+      <div className="max-w-md">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] px-3 py-1 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-widest text-[var(--text-secondary)]">
+          <ShieldCheck className="h-3.5 w-3.5 text-[var(--accent-bright)]" />
+          Privacy &amp; security
+        </div>
+        <h2 className="font-[family-name:var(--font-display)] text-3xl italic text-[var(--text-primary)]">
+          Built to protect your conversations.
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
+          Speed shouldn&apos;t come at the cost of privacy. Ember is built with
+          both in mind from the ground up.
+        </p>
+      </div>
+
+      <div className="mt-10 grid gap-6 sm:grid-cols-3">
+        {SECURITY_POINTS.map(({ icon: Icon, title, body }) => (
+          <div
+            key={title}
+            className="rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] p-6"
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-soft)] text-[var(--accent)]">
+              <Icon className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 text-base font-semibold text-[var(--text-primary)]">{title}</h3>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function TechStackSection() {
+  return (
+    <section className="mx-auto max-w-6xl border-t border-[var(--border)] px-6 py-20">
+      <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-md">
+          <h2 className="font-[family-name:var(--font-display)] text-3xl italic text-[var(--text-primary)]">
+            What&apos;s under the hood
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
+            A real-time stack chosen for one job: getting a message from one
+            screen to another without anyone noticing the trip.
+          </p>
+        </div>
+        <SignalMeter size="sm" color="var(--accent-bright)" bars={4} />
+      </div>
+
+      <div className="mt-10 flex flex-wrap gap-3">
+        {TECH_STACK.map((tech) => (
+          <span
+            key={tech}
+            className="rounded-full border border-[var(--border-strong)] bg-[var(--bg-raised)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-[var(--text-primary)]"
+          >
+            {tech}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  return (
+    <section className="mx-auto max-w-6xl border-t border-[var(--border)] px-6 py-20">
+      <h2 className="max-w-md font-[family-name:var(--font-display)] text-3xl italic text-[var(--text-primary)]">
+        Questions, answered
+      </h2>
+
+      <div className="mt-8 max-w-2xl divide-y divide-[var(--border)] border-t border-[var(--border)]">
+        {FAQS.map(({ question, answer }, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <div key={question}>
+              <button
+                type="button"
+                onClick={() => setOpenIndex(isOpen ? null : index)}
+                className="flex w-full items-center justify-between gap-4 py-5 text-left"
+                aria-expanded={isOpen}
+              >
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                  {question}
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 flex-shrink-0 text-[var(--text-tertiary)] transition-transform ${isOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
+              {isOpen && (
+                <p className="pb-5 pr-8 text-sm leading-relaxed text-[var(--text-secondary)]">
+                  {answer}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -148,6 +377,18 @@ function Landing() {
           ))}
         </div>
       </section>
+
+      {/* How it works */}
+      <HowItWorks />
+
+      {/* Security */}
+      <SecuritySection />
+
+      {/* Tech stack */}
+      <TechStackSection />
+
+      {/* FAQ */}
+      <FAQSection />
 
       {/* CTA band */}
       <section className="mx-auto max-w-6xl px-6 pb-24">
