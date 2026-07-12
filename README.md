@@ -31,6 +31,7 @@ Next.js on the frontend.
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
+- [Design Decisions](#design-decisions)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -193,6 +194,81 @@ flowchart LR
    `EncryptedTextField` that encrypts on save and decrypts on read, so the
    database column always holds ciphertext while the app only ever sees
    plaintext.
+
+## Design Decisions
+
+A few choices in this codebase aren't the "default" option, so here's the
+reasoning behind them — and what they cost.
+
+**Django Channels over a separate Node/Socket.IO service.**
+Presence, typing, and message delivery all need to touch the same
+Postgres-backed permission model (is this user actually a participant in
+this conversation?). Keeping that in Django means the WebSocket consumer can
+reuse the same models, serializers, and auth as the REST API instead of
+duplicating auth logic in a second service written in a second language. The
+trade-off is that Channels is less battle-tested at scale than Socket.IO, and
+running ASGI in production (Daphne) is one more moving part than plain WSGI.
+
+**Redis for the channel layer, with an in-memory fallback.**
+A single Daphne process can fan out messages to connected clients on its own,
+but the moment there's more than one worker, "user A's message" and "user B's
+socket" might live on different processes — Redis is what lets any worker
+publish to a group and have every worker's sockets receive it. Presence and
+typing state ride on the same Redis connection as short-lived TTL keys (a
+"typing" flag that expires on its own is simpler than one that has to be
+explicitly cleared). Locally, none of that cross-process fan-out matters, so
+`REDIS_URL` is optional — Channels drops to `InMemoryChannelLayer`, and the
+cache does the same, purely so a contributor can `git clone` and run the app
+without installing Redis first.
+
+**Encrypting message bodies at the ORM layer, not the database's.**
+`EncryptedTextField` encrypts on save and decrypts on read so every other
+part of the app — serializers, views, the consumer — can keep treating
+`message.content` as a plain string. The alternative (Postgres-native
+encryption, or encrypting/decrypting in every view) either needs
+infrastructure most cheap Postgres hosts don't offer, or spreads
+crypto-shaped bugs across the codebase. Fernet specifically was picked over
+raw AES because it bundles authentication (HMAC) with encryption — a tampered
+ciphertext fails to decrypt instead of silently returning garbage. The real
+cost is key management: there's no built-in key rotation, so the `.env`
+warns not to rotate `MESSAGE_ENCRYPTION_KEY` without re-encrypting existing
+rows first (`encrypt_existing_messages` exists for exactly that migration
+path).
+
+**JWT with refresh rotation instead of session cookies.**
+The frontend and backend are deployed on different domains (Vercel +
+Railway/Render), which makes classic same-site session cookies awkward.
+Short-lived (15 min) access tokens limit how long a leaked token is useful;
+rotating refresh tokens with blacklist-on-rotation means a stolen refresh
+token can be used once before it's invalidated, not indefinitely. The cost is
+complexity on the frontend — `apiClient.ts` needs an interceptor that catches
+401s, refreshes silently, and retries — rather than the browser handling
+auth transparently.
+
+**UUID primary keys everywhere.**
+Sequential integer IDs leak information (how many users signed up, how many
+messages exist) and make conversation/message IDs guessable in URLs and
+WebSocket frames. UUIDs cost a little index/storage overhead versus a plain
+`bigint`, which is an easy trade for a chat app where IDs are user-visible.
+
+**Soft-deleting messages instead of hard-deleting them.**
+A deleted message renders as "This message was deleted" rather than
+disappearing, so the conversation doesn't visibly shift or leave a
+confusing gap for the other participant mid-read. It also means delivery
+receipts and pagination cursors that already reference that message ID
+don't break.
+
+**Cursor pagination for message history, not page numbers.**
+Chat history is append-only and read backwards from "most recent," which is
+exactly the case cursor pagination is good at (stable results even while new
+messages are being inserted) and page-number pagination is bad at (page 2
+shifts underneath you as new rows land at the top).
+
+**What this repo deliberately doesn't do:** there's no message queue
+(Celery/RQ) — the only background-ish work is presence TTL expiry, which
+Redis handles natively — and there's no rate limiting on the WebSocket
+consumer yet, which is the first thing to add before this goes in front of
+untrusted traffic at scale.
 
 ## Project Structure
 
