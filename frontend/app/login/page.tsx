@@ -81,6 +81,10 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoComplete="email"
+                spellCheck={false}
                 className={inputClass}
               />
             </div>
@@ -94,6 +98,10 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  autoComplete="current-password"
+                  spellCheck={false}
                   className={`${inputClass} pr-11`}
                 />
                 <button

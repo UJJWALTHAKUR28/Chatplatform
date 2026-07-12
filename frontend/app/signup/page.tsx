@@ -112,6 +112,10 @@ export default function SignupPage() {
                 onChange={set("email")}
                 placeholder="you@example.com"
                 required
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoComplete="email"
+                spellCheck={false}
                 className={inputClass}
               />
             </div>
@@ -128,6 +132,7 @@ export default function SignupPage() {
                 required
                 minLength={2}
                 maxLength={50}
+                autoComplete="username"
                 className={inputClass}
               />
             </div>
@@ -142,6 +147,10 @@ export default function SignupPage() {
                   placeholder="At least 8 characters"
                   required
                   minLength={8}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  autoComplete="new-password"
+                  spellCheck={false}
                   className={`${inputClass} pr-11`}
                 />
                 <button
@@ -164,6 +173,10 @@ export default function SignupPage() {
                 onChange={set("password_confirm")}
                 placeholder="Repeat your password"
                 required
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoComplete="new-password"
+                spellCheck={false}
                 className={inputClass}
               />
             </div>
