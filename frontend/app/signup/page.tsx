@@ -147,6 +147,8 @@ export default function SignupPage() {
                   placeholder="At least 8 characters"
                   required
                   minLength={8}
+                  pattern="^\S+$"
+                  title="Password must not contain spaces"
                   autoCapitalize="none"
                   autoCorrect="off"
                   autoComplete="new-password"
@@ -173,6 +175,8 @@ export default function SignupPage() {
                 onChange={set("password_confirm")}
                 placeholder="Repeat your password"
                 required
+                pattern="^\S+$"
+                title="Password must not contain spaces"
                 autoCapitalize="none"
                 autoCorrect="off"
                 autoComplete="new-password"
